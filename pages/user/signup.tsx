@@ -1,14 +1,18 @@
-import Button from "../../components/button";
 import Link from "next/link";
 import useValidInput from "../../hooks/use-valid";
+import { auth } from "../../utils/firebase-config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/router";
+
 const Signup = () => {
+  const router = useRouter();
+
   const {
     value: userName,
     isValid: userNameValid,
     isNotValid: userNameNotValid,
     changeValueHandler: userNameChangeHandler,
     blurHandler: userNameBlur,
-    reset: userNameReset,
     valueStyles: userNameStyles,
   } = useValidInput((name) => name.trim().length > 8);
 
@@ -18,7 +22,6 @@ const Signup = () => {
     isNotValid: emailNotValid,
     changeValueHandler: emailChangeHandler,
     blurHandler: emailBlur,
-    reset: emailReset,
     valueStyles: emailStyles,
   } = useValidInput(
     (email) =>
@@ -45,14 +48,39 @@ const Signup = () => {
     isNotValid: confirmPasswordNotValid,
     changeValueHandler: confirmPasswordChangeHandler,
     blurHandler: confirmPasswordBlur,
-    reset: confirmPasswordReset,
     valueStyles: confirmPasswordStyles,
   } = useValidInput((pass) => pass === password);
+
+  const formValid =
+    userNameValid && emailValid && passwordValid && confirmPasswordValid;
+
+  const submitHandler = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    console.log("Sign Up Clicked!");
+    if (!formValid) {
+      console.log("Form Not Valid!");
+      return;
+    }
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+        router.push("/");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode,errorMessage)
+      });
+  };
 
   return (
     <main className="flex h-4/6 items-center justify-center">
       <div className="mx-auto w-80 rounded-3xl border-4 border-pistachio p-6">
-        <form className="flex flex-col gap-4 text-pistachio">
+        <form
+          onSubmit={submitHandler}
+          className="flex flex-col gap-4 text-pistachio"
+        >
           <label>Username</label>
           <input
             value={userName}
@@ -104,7 +132,13 @@ const Signup = () => {
             <p className="text-orange">Password don't match.</p>
           )}
           <span className="flex flex-row justify-between">
-            <Button press="onSubmit">Sign Up</Button>
+            <button
+              disabled={!formValid}
+              type="submit"
+              className="rounded-lg border-2 border-pistachio px-4 py-1 transition-colors duration-200 hover:bg-pistachio hover:text-black "
+            >
+              Sign Up
+            </button>
             <Link href="/user/login">
               <p className="cursor-pointer transition-colors duration-200 hover:text-yellow">
                 Log in

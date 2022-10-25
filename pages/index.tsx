@@ -3,8 +3,20 @@ import Head from "next/head";
 import Navbar from "../components/navbar";
 import Gallery from "../components/Gallery";
 import useGallery from "../hooks/use-gallery";
+import { auth } from "../utils/firebase-config";
 
 const Home: NextPage = () => {
+  const user = auth.currentUser;
+
+
+  if (user !== null) {
+    const displayName = user.displayName;
+    const email = user.email;
+    console.log(displayName, email)
+  }
+
+
+
   const { gallery: illustrations, isLoading } = useGallery({
     galleryName: "illustrations",
   });

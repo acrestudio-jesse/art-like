@@ -1,14 +1,18 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import useValidInput from "../../hooks/use-valid";
+import { auth } from "../../utils/firebase-config";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 
 const Login = () => {
+  const router = useRouter()
+
   const {
     value: email,
     isValid: emailValid,
     isNotValid: emailNotValid,
     changeValueHandler: emailChangeHandler,
     blurHandler: emailBlur,
-    reset: emailReset,
     valueStyles: emailStyles,
   } = useValidInput(
     (email) =>
@@ -25,15 +29,28 @@ const Login = () => {
     isNotValid: passwordNotValid,
     changeValueHandler: passwordChangeHandler,
     blurHandler: passwordBlur,
-    reset: passwordReset,
     valueStyles: passwordStyles,
   } = useValidInput((password) => password.trim().length > 8);
 
   const formValid = emailValid && passwordValid;
 
-  const submitHandler = () => {
-    emailReset();
-    passwordReset();
+  const submitHandler = (e: { preventDefault: () => void }) => {
+    if (!formValid) {
+      console.log("Form Not Valid!");
+      return;
+    }
+    e.preventDefault();
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        router.push('/')
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+      });
   };
 
   return (
@@ -69,10 +86,12 @@ const Login = () => {
           )}
           <span className="flex flex-row justify-between">
             <Link href="/user/signup">
-              <p className="cursor-pointer hover:text-yellow transition-colors duration-200">Sign Up</p>
+              <p className="cursor-pointer transition-colors duration-200 hover:text-yellow">
+                Sign Up
+              </p>
             </Link>
             <button
-              disabled={formValid}
+              disabled={!formValid}
               type="submit"
               className="rounded-lg border-2 border-pistachio px-4 py-1 transition-colors duration-200 hover:bg-pistachio hover:text-black "
             >

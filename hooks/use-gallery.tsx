@@ -24,7 +24,6 @@ function useGallery({
       .then((res) => res.json())
       .then((data) => {
         setGallery(data);
-        console.log(data);
         if (!id) return;
         const [img] = data.filter((el: { id: string }) => el.id === id);
         setImage(img);

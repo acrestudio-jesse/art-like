@@ -15,7 +15,7 @@ const Gallery = ({ displayImages, imagePath }: imageProps) => {
           return (
             <Link
               key={img.id}
-              href={{ pathname: `${imagePath}/${img.id}`, query: img }}
+              href={{ pathname: `${imagePath}${img.id}`, query: img }}
             >
               <div className="relative h-[25vw] w-[25vw] md:h-[35vh] md:w-[50vw]">
                 <Image
