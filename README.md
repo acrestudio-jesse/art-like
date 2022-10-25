@@ -1,5 +1,14 @@
 Art-Like
 
+TODO:
+Add Like buttons
+Add UPDATE USER INFO page
+Link USER with LIKE Document
+
+UPDATE 10/25
+
+Login and SignIn have been added from firebase. 
+
 As I continue to develop my front end magic, I'm trying to figure out a way to make logins and likes work within this blog. There will be no post mechanism, but this is just for my own learning.
 
 GOAL:
